@@ -64,10 +64,7 @@ void initWS2812() {
 
 void initLEDAnimation() {
   //CHECK LDR - if very dark damp the brightness
-  workingLdrRaw = readLDR();
-  workingLdrMapped = map(readLDR(), LDR_UPPER_THRESHOLD, 0.0, 1.0, 0.1);
-  workingLdrMapped = fConstrain(workingLdrMapped, 0.1, 1.0);
-  workingBrightness = fMin(custom_brightness_factor, workingLdrMapped);
+  workingBrighness = getCalculatedBrightness();
 
   LEDS.setBrightness(100 * workingBrightness);
 
@@ -259,6 +256,7 @@ void playRampDownToNone() {
 }
 
 void changeAnimState(AnimState newState) {
+  
   if (newState == animState) {
     return;
   }
@@ -433,7 +431,7 @@ void updateLightIndicatorHeight() {
 float getCalculatedBrightness() {
   //CHECK LDR - if very dark damp the brightness
   workingLdrRaw = readLDR();
-  workingLdrMapped = map(readLDR(), LDR_UPPER_THRESHOLD, 0.0, 1.0, 0.1);
+  workingLdrMapped = map(workingLdrRaw, LDR_UPPER_THRESHOLD, 0.0, 1.0, 0.1);
   workingLdrMapped = fConstrain(workingLdrMapped, 0.1, 1.0);
   workingBrightness = fMin(custom_brightness_factor, workingLdrMapped);
   return workingBrightness;

@@ -48,10 +48,8 @@ void handleLongPress() {
 
 void handleShortPressRelease() {
 
-      
       if(pms_hardware_state == PMS_OK)
       {
-       
         playUserPressAnimation();
       }
       else if(pms_hardware_state == PMS_ERROR)

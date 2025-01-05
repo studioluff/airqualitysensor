@@ -278,6 +278,7 @@ bool isCheckPinOn = false;
 unsigned long lastTimeReadCheckPin = 0;
 
 void setup() {
+  initFactoryCheck();
 
   initSerial();
 

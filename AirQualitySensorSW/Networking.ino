@@ -402,7 +402,7 @@ void updateWifi() {
     //if an animation is running this might cause some delays, so doing so it's going to check for wifi when animations are not running.
     if (animState != ANIM_NONE) {
       lastTimeCheckedForWifiConnection = millis();
-      reconnecting_wifi_interval = 500;
+      reconnecting_wifi_interval = 5000;
       return;
     }
     lastTimeCheckedForWifiConnection = millis();

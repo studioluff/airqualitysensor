@@ -73,6 +73,19 @@ float fConstrain(float val, float min, float max) {
     if (val > max) return max;
     return val;
 }
+float fConstrain(float val, float min, float max) {
+    // First ensure we handle the case where min is greater than max
+    if (min > max) {
+        float temp = min;
+        min = max;
+        max = temp;
+    }
+    
+    // Return constrained value
+    if (val < min) return min;
+    if (val > max) return max;
+    return val;
+}
 
 float fMin(float val1, float val2) {
     // Return the smaller of two values
