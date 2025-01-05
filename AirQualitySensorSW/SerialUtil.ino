@@ -11,7 +11,7 @@ void enableSerial() {
   Serial.print("|                        |\n");
   Serial.print("|   Air Quality Sensor   | \n");
   Serial.print("|   by studio LUFF       | \n");
-  Serial.print("|   version 1.0          | \n");
+  Serial.print("|   version 1.0.1        | \n");
   Serial.print("|________________________| \n");
 }
 

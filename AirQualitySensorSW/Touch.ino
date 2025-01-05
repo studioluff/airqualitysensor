@@ -16,10 +16,11 @@ void updateTouch() {
             prevTouched = true;
             touchStartTime = currentTime;  // Store current time
             longPressDetected = false;
-            
-            sendTouch();
+            serialPrintln("touch start!");
+           
         }
         else if (workingTouchValue > touchThreshold && prevTouched == true) {
+           
             // Safe long press detection
             unsigned long pressDuration = currentTime - touchStartTime;
             if (!longPressDetected && pressDuration >= LONG_PRESS_DURATION) {
@@ -28,6 +29,7 @@ void updateTouch() {
             }
         }
         else if (workingTouchValue < touchThreshold && prevTouched == true) {
+            serialPrintln("touch end!");
             prevTouched = false;
             if (longPressDetected) {
                 handleLongPressRelease();
@@ -46,7 +48,7 @@ void handleLongPress() {
 
 void handleShortPressRelease() {
 
-
+      
       if(pms_hardware_state == PMS_OK)
       {
        

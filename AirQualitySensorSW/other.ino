@@ -10,10 +10,13 @@ void initLDR() {
   pinMode(LDR2, INPUT);
 }
 
+
 int readLDR() {
 
   ldr1Value = analogRead(LDR1);
   ldr2Value = analogRead(LDR2);
+
+  
 
   return abs(ldr1Value + ldr2Value);
 }
@@ -57,4 +60,28 @@ uint64_t stringToUInt64(const String& str) {
   }
   return result;
 }
+float fConstrain(float val, float min, float max) {
+    // First ensure we handle the case where min is greater than max
+    if (min > max) {
+        float temp = min;
+        min = max;
+        max = temp;
+    }
+    
+    // Return constrained value
+    if (val < min) return min;
+    if (val > max) return max;
+    return val;
+}
+
+float fMin(float val1, float val2) {
+    // Return the smaller of two values
+    return (val1 < val2) ? val1 : val2;
+}
+
+float fMax(float val1, float val2) {
+    // Return the larger of two values
+    return (val1 > val2) ? val1 : val2;
+}
+
 

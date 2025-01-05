@@ -19,6 +19,8 @@
 
 Copyright (C) 2024 Pierluigi Dalla Rosa - studio LUFF
 
+Version 1.0.1
+
 “Commons Clause” License Condition v1.0
 
 The Software is provided to you by the Licensor under the License, as defined below, subject to the following condition.
@@ -27,6 +29,7 @@ For purposes of the foregoing, “Sell” means practicing any or all of the rig
 Software: [Air Quality Sensor by studio LUFF]
 License: [GNU Affero General Public License]
 Licensor: [studio LUFF]
+
 
 
 Article about the reliability of PMS7003: 
@@ -160,9 +163,13 @@ unsigned long touchSensorLastUpdate = 0;
 
 
 /** ---------------------------------- LDR ---------------------------------- **/
+#define LDR_UPPER_THRESHOLD 30.0
 int ldr1Value = 0;
 int ldr2Value = 0;
 float workingBrightness = 0.0f;
+int workingLdrRaw;
+float workingLdrMapped;
+
 
 #define LDR1 6
 #define LDR2 7

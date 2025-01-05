@@ -63,7 +63,12 @@ void initWS2812() {
 }
 
 void initLEDAnimation() {
-  workingBrightness = min(custom_brightness_factor, (float)constrain(map(readLDR(), 30, 0.0, 1.0, 0.1), 0.1, 1.0));
+  //CHECK LDR - if very dark damp the brightness
+  workingLdrRaw = readLDR();
+  workingLdrMapped = map(readLDR(), LDR_UPPER_THRESHOLD, 0.0, 1.0, 0.1);
+  workingLdrMapped = fConstrain(workingLdrMapped, 0.1, 1.0);
+  workingBrightness = fMin(custom_brightness_factor, workingLdrMapped);
+
   LEDS.setBrightness(100 * workingBrightness);
 
   // Black to white transition
@@ -184,7 +189,7 @@ void updateLEDS() {
         FastLED.show();
         break;
       }
-       // Not read yet animation logic
+      // Not read yet animation logic
     case ANIM_NOT_READ_YET:
       {
         for (workingIndexLed = 0; workingIndexLed < NUM_LEDS; workingIndexLed++) {
@@ -270,8 +275,8 @@ void changeAnimState(AnimState newState) {
       timeline.clear();
 
       timeline.mode(Tween::Mode::REPEAT_SQ);
-      //CHECK LDR - if very dark damp the brightness
-      workingBrightness = min(custom_brightness_factor, (float)constrain(map(readLDR(), 30, 0.0, 1.0, 0.1), 0.1, 1.0));
+
+      workingBrightness = getCalculatedBrightness();
 
       timeline.add(animIntensityTarget)
         .init(0.1 * workingBrightness)
@@ -286,43 +291,46 @@ void changeAnimState(AnimState newState) {
       break;
 
     case ANIM_USER_PRESS:
-      //
-      if (animState == ANIM_ABOVE_THRESHOLD) {
-        didDismissAboveThresholdAnimationEvent = millis();
-        didDismissAboveThreshold = true;
+      {
+        //
+        if (animState == ANIM_ABOVE_THRESHOLD) {
+          didDismissAboveThresholdAnimationEvent = millis();
+          didDismissAboveThreshold = true;
+        }
+
+        // Handle animation upon user interaction (press)
+        timeline.clear();
+
+        timeline.mode(Tween::Mode::ONCE);
+
+        workingBrightness = getCalculatedBrightness();
+
+        timeline.add(animIntensityTarget, true)
+          .init(0)
+          .then(workingBrightness, 500)
+          .hold(custom_time_on + 1000)
+          .then(0, 500, []() {
+            changeAnimState(ANIM_NONE);
+          });
+        //find volume
+        animLedIndexTarget = 0;
+        workingAnimValue = 0;
+        workingIndexLed = 0;
+        while (workingAnimValue < currentAQIvalue) {
+          workingAnimValue = scaleValues[workingIndexLed];
+          workingIndexLed++;
+        }
+        workingIndexLed = fMax(2, workingIndexLed);
+        timeline.add(animLedIndexTarget, true)
+          .init(0)
+          .then(workingIndexLed, 1500)
+          .hold(custom_time_on)
+          .then(0, 500, []() {
+            changeAnimState(ANIM_NONE);
+          });
+        timeline.start();
+        break;
       }
-
-      // Handle animation upon user interaction (press)
-      timeline.clear();
-
-      timeline.mode(Tween::Mode::ONCE);
-      workingBrightness = min(custom_brightness_factor, (float)constrain(map(readLDR(), 30, 0.0, 1.0, 0.1), 0.1, 1.0));
-
-      timeline.add(animIntensityTarget, true)
-        .init(0)
-        .then(workingBrightness, 500)
-        .hold(custom_time_on + 1000)
-        .then(0, 500, []() {
-          changeAnimState(ANIM_NONE);
-        });
-      //find volume
-      animLedIndexTarget = 0;
-      workingAnimValue = 0;
-      workingIndexLed = 0;
-      while (workingAnimValue < currentAQIvalue) {
-        workingAnimValue = scaleValues[workingIndexLed];
-        workingIndexLed++;
-      }
-      workingIndexLed = max(2, workingIndexLed);
-      timeline.add(animLedIndexTarget, true)
-        .init(0)
-        .then(workingIndexLed, 1500)
-        .hold(custom_time_on)
-        .then(0, 500, []() {
-          changeAnimState(ANIM_NONE);
-        });
-      timeline.start();
-      break;
 
     case ANIM_RAMP_DOWN_TO_USER:
       // Handle animation ramping down to the user's state
@@ -352,7 +360,9 @@ void changeAnimState(AnimState newState) {
     case ANIM_NOT_READ_YET:
       // Handle animation for content that has not been read yet
       // This could include displaying a progress bar or adding visual cues to indicate newness
-      workingBrightness = min(custom_brightness_factor, (float)constrain(map(readLDR(), 30, 0.0, 1.0, 0.1), 0.1, 1.0));
+
+      workingBrightness = getCalculatedBrightness();
+
       timeline.clear();
       timeline.mode(Tween::Mode::ONCE);
       timeline.add(animIntensityTarget, true)
@@ -373,7 +383,9 @@ void changeAnimState(AnimState newState) {
     case ANIM_NO_SENSOR:
       // Handle animation when there is no sensor data available
       // For instance, provide feedback to the user that no sensor input was detected
-      workingBrightness = min(custom_brightness_factor, (float)constrain(map(readLDR(), 30, 0.0, 1.0, 0.1), 0.1, 1.0));
+
+      workingBrightness = getCalculatedBrightness();
+
       timeline.clear();
       timeline.mode(Tween::Mode::ONCE);
       timeline.add(animIntensityTarget, true)
@@ -389,7 +401,9 @@ void changeAnimState(AnimState newState) {
     case ANIM_DIAGNOSTICS:
       timeline.clear();
       timeline.mode(Tween::Mode::ONCE);
-      workingBrightness = min(custom_brightness_factor, (float)constrain(map(readLDR(), 30, 0.0, 1.0, 0.1), 0.1, 1.0));
+
+      workingBrightness = getCalculatedBrightness();
+
       timeline.add(animIntensityTarget, true)
         .init(0)
         .then<Ease::ExpoInOut>(workingBrightness, 2000)
@@ -412,6 +426,15 @@ void updateLightIndicatorHeight() {
     workingAnimValue = scaleValues[workingIndexLed];
     workingIndexLed++;
   }
-  animLedIndexTarget = max(2, workingIndexLed - 2);
+  animLedIndexTarget = fMax(2, workingIndexLed - 2);
   animLedIndexTarget = min((int)animLedIndexTarget, NUM_LEDS - 2);
+}
+
+float getCalculatedBrightness() {
+  //CHECK LDR - if very dark damp the brightness
+  workingLdrRaw = readLDR();
+  workingLdrMapped = map(readLDR(), LDR_UPPER_THRESHOLD, 0.0, 1.0, 0.1);
+  workingLdrMapped = fConstrain(workingLdrMapped, 0.1, 1.0);
+  workingBrightness = fMin(custom_brightness_factor, workingLdrMapped);
+  return workingBrightness;
 }
