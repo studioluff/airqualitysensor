@@ -64,7 +64,7 @@ void initWS2812() {
 
 void initLEDAnimation() {
   //CHECK LDR - if very dark damp the brightness
-  workingBrighness = getCalculatedBrightness();
+  workingBrightness = getCalculatedBrightness();
 
   LEDS.setBrightness(100 * workingBrightness);
 
