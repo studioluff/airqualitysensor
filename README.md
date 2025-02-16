@@ -12,6 +12,7 @@ ESPAsyncWebSrv@1.2.7<br>
 ArduinoJson@6.21.4<br>
 Tween.h@0.4.2 by hideakitai<br>
 NTPClient@3.2.1<br>
+ESPping@1.0.4<br>
 
 <br>
 <br>
