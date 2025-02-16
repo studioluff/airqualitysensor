@@ -23,3 +23,8 @@ https://github.com/arduino-libraries/NTPClient<br>
 Install Erriez Arduino Libraries:<br>
 
 https://github.com/Erriez/ErriezArduinoLibraries<br>
+
+
+Arduino IDE settings: 
+
+![](arduino_settings.png)
