@@ -5,7 +5,7 @@ bool doesPrintSerialMessages = true;  // Flag to control serial printing
 void enableSerial() {
   doesPrintSerialMessages = true;
   Serial.begin(115200);
-  Serial.setTxTimeoutMs(0);
+  Serial.setTxTimeoutMs(0); // NOTE: USB CDC On Boot has to be "Enabled"
 
   Serial.print("__________________________\n");
   Serial.print("|                        |\n");

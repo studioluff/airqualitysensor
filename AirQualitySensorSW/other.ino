@@ -60,19 +60,7 @@ uint64_t stringToUInt64(const String& str) {
   }
   return result;
 }
-float fConstrain(float val, float min, float max) {
-    // First ensure we handle the case where min is greater than max
-    if (min > max) {
-        float temp = min;
-        min = max;
-        max = temp;
-    }
-    
-    // Return constrained value
-    if (val < min) return min;
-    if (val > max) return max;
-    return val;
-}
+
 float fConstrain(float val, float min, float max) {
     // First ensure we handle the case where min is greater than max
     if (min > max) {
